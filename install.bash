@@ -9,7 +9,7 @@ pip install -r requirements.txt
 
 # Apply Django migrations
 echo "Applying Django migrations..."
-python manage.py migrate
+python3 manage.py migrate
 
 # Load initial data
 echo "Loading initial data..."
