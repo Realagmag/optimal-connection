@@ -66,16 +66,67 @@ def load_channels():
             )
 
 
-def load_all():
-    load_nodes()
-    load_connections()
-    load_channels()
-    delete_orphan_nodes()
-
-
 def delete_orphan_nodes():
     orphan_nodes = Node.objects.filter(
         ~Q(id__in=Connection.objects.values_list('starting_node', flat=True)) &
         ~Q(id__in=Connection.objects.values_list('ending_node', flat=True))
     )
     orphan_nodes.delete()
+
+
+def add_additional_connections():
+    cities = {
+        "Gdańsk": 39925,
+        "Poznań": 40039,
+        "Olsztyn": 34000,
+        "Berlin": 11577,
+        "Frankfurt": 10205,
+        "Wrocław": 46300,
+        "Ostrava": 10160,
+        "Cieszyn": 54298,
+        "Piaseczno": 24246,
+        "Katowice": 54999,
+        "Kraków": 51004,
+        "Lublin": 27088
+    }
+    conns_to_add = [
+        ("Gdańsk", "Poznań"),
+        ("Poznań", "Olsztyn"),
+        ("Wrocław", "Berlin"),
+        ("Wrocław", "Frankfurt"),
+        ("Wrocław", "Ostrava"),
+        ("Wrocław", "Piaseczno"),
+        ("Piaseczno", "Katowice"),
+        ("Cieszyn", "Kraków"),
+        ("Kraków", "Lublin")
+    ]
+    for city1, city2 in conns_to_add:
+        city1_node = Node.objects.get(id=cities.get(city1))
+        city2_node = Node.objects.get(id=cities.get(city2))
+        conn1 = Connection.objects.create(
+            starting_node=city1_node,
+            ending_node=city2_node,
+            total_capacity=4.8,
+            provisioned_capacity=25
+        )
+        conn2 = Connection.objects.create(
+            starting_node=city2_node,
+            ending_node=city1_node,
+            total_capacity=4.8,
+            provisioned_capacity=25
+        )
+        for _ in range(24):
+            Channel.objects.create(
+                connection=conn1,
+                width=50.0)
+            Channel.objects.create(
+                connection=conn2,
+                width=50.0)
+
+
+def load_all():
+    load_nodes()
+    load_connections()
+    load_channels()
+    delete_orphan_nodes()
+    add_additional_connections()

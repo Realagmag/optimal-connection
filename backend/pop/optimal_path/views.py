@@ -1,6 +1,6 @@
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
-from . import models, a_star, tools
+from . import models, a_star
 import json
 
 @ensure_csrf_cookie
@@ -42,7 +42,6 @@ def api_reserve(request):
                 status=400
             )
         channel_size = solver.translate_to_channel(speed)
-        tools.add_channel_to_db(best_route, channel_size)
         best_route = [str(conn) for conn in best_route]
         return JsonResponse(
             {'bestRoute': best_route,
