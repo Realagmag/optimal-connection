@@ -1,6 +1,7 @@
 from . import models
 from decimal import Decimal
 
+
 def add_channel_to_db(route, channel_size):
     for conn_id in route:
         conn = models.Connection.objects.get(
