@@ -85,10 +85,6 @@ class AStarOptimalPathSolver():
         # Sortowanie dwóch najlepszych rozwiązań według wartości funkcji kosztu
         best_paths.sort()
 
-        # Wypisywanie wartości kosztów i ścieżek
-        for i, (cost, path) in enumerate(best_paths, 1):
-            print(f"Rozwiązanie {i}: Koszt = {cost}, Ścieżka = {path}")
-
         return best_paths
 
 

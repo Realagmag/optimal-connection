@@ -214,7 +214,7 @@ function App() {
           style={{
             maxHeight: '500px',
             overflowY: 'auto',
-            border: '1px solid #ddd',
+            border: `2px solid ${isSecondRouteSelected ? '#ddd' : 'green'}`,
             borderRadius: '6px',
             padding: '10px',
             backgroundColor: '#ffffff',
@@ -248,7 +248,7 @@ function App() {
           style={{
             maxHeight: '500px',
             overflowY: 'auto',
-            border: '1px solid #ddd',
+            border: `2px solid ${isSecondRouteSelected ? 'green' : '#ddd'}`,
             borderRadius: '6px',
             padding: '10px',
             backgroundColor: '#ffffff',
@@ -262,7 +262,7 @@ function App() {
               style={{
                 padding: '10px',
                 marginBottom: '10px',
-                border: '2px solid blue',
+                border: `2px solid blue`,
                 borderRadius: '6px',
                 backgroundColor: '#e8f4ff',
                 cursor: 'pointer',
