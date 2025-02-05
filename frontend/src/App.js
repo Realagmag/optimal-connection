@@ -13,10 +13,11 @@ function App() {
   const [startEndPath, setStartEndPath] = useState([undefined, undefined]);
   const [orangePurpleCities, setOrangePurpleCities] = useState([undefined, undefined]);
   const [pathToModify, setPathToModify] = useState(0);
-  const [bestRoute, setBestRoute] = useState({route: [], channelSize: 0});
+  const [bestRoute, setBestRoute] = useState({route: [], channelSize: 0, cost: 0, secondRoute: [], secondCost: 0});
   const [map, setMap] = useState(null);
   const [connInfoData, setConnInfoData] = useState({});
   const [selectedSpeed, setSelectedSpeed] = useState(0);
+  const [isSecondRouteSelected, setIsSecondRouteSelected] = useState(false);
   const mapRef = useRef();
 
 
@@ -117,7 +118,10 @@ function App() {
         const data = await response.json();
         setBestRoute({
           route: data.bestRoute,
-          channelSize: data.channelSize});
+          channelSize: data.channelSize,
+          bestCost: data.bestCost,
+          secondRoute: data.secondRoute,
+          secondCost: data.secondCost});
 
         setOrangePurpleCities([undefined, undefined]);
         setConnInfoData({});
@@ -142,10 +146,10 @@ function App() {
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {connections.map((conn) => (
           <CityLine
-            key={`${conn.id}-${bestRoute.route.includes(conn.id)}-${[connInfoData.firstConn, connInfoData.secondConn].includes(conn.id)}`}
+            key={`${conn.id}-${isSecondRouteSelected ? bestRoute.secondRoute.includes(conn.id) : bestRoute.route.includes(conn.id)}-${[connInfoData.firstConn, connInfoData.secondConn].includes(conn.id)}`}
             positions={[cities[conn.starting_node_id], cities[conn.ending_node_id]]}
             onClick={() => handleLineClick(conn)}
-            highlight={bestRoute.route.includes(conn.id)}
+            highlight={isSecondRouteSelected ? bestRoute.secondRoute.includes(conn.id) : bestRoute.route.includes(conn.id)}
             displayingInfo={
               [connInfoData.firstConn, connInfoData.secondConn].includes(conn.id)
             }
@@ -216,6 +220,7 @@ function App() {
             backgroundColor: '#ffffff',
             boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.1)',
           }}
+          onClick={() => setIsSecondRouteSelected(false)}
         >
           {bestRoute && (
             <div
@@ -229,13 +234,51 @@ function App() {
                 transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
               }}
             >
-              <p style={{ margin: '0', fontWeight: 'bold', fontSize: '14px' }}>
-                Route: {bestRoute.route?.join(' -> ')}
+              <p style={{ margin: '0', fontWeight: 'bold', fontSize: '12px' }}>
+                Best route: {bestRoute.route?.join(' -> ')}
               </p>
+              <p style={{ margin: '0', fontSize: '12px', color: '#555' }}>Cost: {bestRoute.bestCost}</p>
               <p style={{ margin: '0', fontSize: '12px', color: '#555' }}>Channel: {bestRoute.channelSize} GHz</p>
             </div>
           )}
         </div>
+
+
+        <div
+          style={{
+            maxHeight: '500px',
+            overflowY: 'auto',
+            border: '1px solid #ddd',
+            borderRadius: '6px',
+            padding: '10px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.1)',
+            marginBottom: '10px', // Added margin to separate from second div
+          }}
+          onClick={() => setIsSecondRouteSelected(true)}
+        >
+          {bestRoute && (
+            <div
+              style={{
+                padding: '10px',
+                marginBottom: '10px',
+                border: '2px solid blue',
+                borderRadius: '6px',
+                backgroundColor: '#e8f4ff',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
+              }}
+            >
+              <p style={{ margin: '0', fontWeight: 'bold', fontSize: '12px' }}>
+                Second best route: {bestRoute.secondRoute?.join(' -> ')}
+              </p>
+              <p style={{ margin: '0', fontSize: '12px', color: '#555' }}>Cost: {bestRoute.secondCost}</p>
+              <p style={{ margin: '0', fontSize: '12px', color: '#555' }}>Channel: {bestRoute.channelSize} GHz</p>
+            </div>
+          )}
+          </div>
+
+
           <div style={{flexGrow:1}}></div>
         {/* ConnInfo Component */}
         <ConnInfo style={{marginTop: 'auto'}}

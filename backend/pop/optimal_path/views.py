@@ -35,7 +35,11 @@ def api_reserve(request):
         end_node = data.get('endNode')
         speed = int(data.get('speed'))
         solver = a_star.AStarOptimalPathSolver()
-        best_route = solver.solve(start_node, end_node, speed)
+        best_routes = solver.solve(start_node, end_node, speed)
+        best_route = best_routes[0][1]
+        best_cost = best_routes[0][0]
+        second_route = best_routes[1][1]
+        second_cost = best_routes[1][0]
         if not best_route:
             return JsonResponse(
                 {'error': "Choose desired speed!"},
@@ -43,9 +47,13 @@ def api_reserve(request):
             )
         channel_size = solver.translate_to_channel(speed)
         best_route = [str(conn) for conn in best_route]
+        second_route = [str(conn) for conn in second_route]
         return JsonResponse(
             {'bestRoute': best_route,
-             'channelSize': channel_size},
+             'channelSize': channel_size,
+             'bestCost': best_cost,
+             'secondRoute': second_route,
+             'secondCost': second_cost},
         )
 
 

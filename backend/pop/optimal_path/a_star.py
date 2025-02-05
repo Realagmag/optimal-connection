@@ -56,27 +56,41 @@ class AStarOptimalPathSolver():
             for conn in self.starting_conns
         }
 
-        while True:
-            if not queue:
-                return None
+        best_paths = []
 
+        while queue:
             path_to_expand = min(queue, key=queue.get)
 
             if queue[path_to_expand] == float('inf'):
-                return None
+                break
 
             if path_to_expand[-1] in self.FINAL_PATHS:
-                return path_to_expand
+                best_paths.append((round(queue[path_to_expand],2), path_to_expand))
+                if len(best_paths) == 2:
+                    break
 
             del queue[path_to_expand]
 
-            new_conns = self.continuations[path_to_expand[-1]]
+            new_conns = self.continuations.get(path_to_expand[-1], [])
             for new_conn in new_conns:
                 if self.not_repeated(new_conn, path_to_expand):
                     new_path = (*path_to_expand, new_conn)
                     new_path_value = self.calculate_q(new_path)
                     if new_path_value != float('inf'):
                         queue[new_path] = new_path_value
+
+        if len(best_paths) < 2:
+            return None  # Jeśli nie znaleziono dwóch rozwiązań, zwracamy None
+
+        # Sortowanie dwóch najlepszych rozwiązań według wartości funkcji kosztu
+        best_paths.sort()
+
+        # Wypisywanie wartości kosztów i ścieżek
+        for i, (cost, path) in enumerate(best_paths, 1):
+            print(f"Rozwiązanie {i}: Koszt = {cost}, Ścieżka = {path}")
+
+        return best_paths
+
 
     def not_repeated(self, conn, path):
         return conn not in path and self.ANTI_PATHS[conn] not in path
