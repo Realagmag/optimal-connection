@@ -80,6 +80,6 @@ def api_get_channels(request, conn_id):
         "purple": purple,
         "capacity": str(float(capacity)),
         "firstConn": conn_id,
-        "secondConn": secondConn,
+        "secondConn": str(secondConn),
         "channels": channels,
     })
